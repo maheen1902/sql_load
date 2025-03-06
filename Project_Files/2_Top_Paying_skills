@@ -1,0 +1,55 @@
+/*
+Question: What skills are required for the top-paying data analyst jobs?
+- Use the top 10 highest-paying Data Analyst jobs from first query
+- Add the specific skills required for these roles
+- Why? It provides a detailed look at which high-paying jobs demand certain skills, 
+    helping job seekers understand which skills to develop that align with top salaries
+*/
+
+With Top_paying_Jobs AS(
+    SELECT	
+	job_id,
+    company_dim.name as Company_name,
+	job_title,
+	job_location,
+	job_schedule_type,
+	salary_year_avg,
+	job_posted_date
+FROM 
+    job_postings_fact
+Left JOIN
+    company_dim
+ON
+    company_dim.company_id = job_postings_fact.company_id
+WHERE
+    job_title = 'Data Analyst'
+    AND
+    job_location = 'Anywhere'
+    AND
+    salary_year_avg is NOT NULL
+ORDER BY
+    salary_year_avg DESC
+LIMIT
+    10
+)
+
+SELECT 
+    Top_paying_Jobs.Company_name,
+    skills_dim.skills as SkillRequired,
+	Top_paying_Jobs.job_title,
+	Top_paying_Jobs.job_location,
+	Top_paying_Jobs.job_schedule_type,
+	Top_paying_Jobs.salary_year_avg,
+	Top_paying_Jobs.job_posted_date
+FROM
+    Top_paying_Jobs
+LEFT JOIN
+    skills_job_dim
+ON  
+    skills_job_dim.job_id = Top_paying_Jobs.job_id
+LEFT JOIN
+    skills_dim
+ON
+    skills_job_dim.skill_id = skills_dim.skill_id
+ORDER BY
+    Top_paying_Jobs.salary_year_avg DESC;
